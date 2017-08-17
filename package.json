@@ -1,0 +1,29 @@
+{
+  "name": "react-webpack",
+  "version": "1.0.0",
+  "description": "react study(1) config environment",
+  "main": "app.js",
+  "scripts": {
+    "test": "npm start"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dengshasha/react-webpack.git"
+  },
+  "keywords": [
+    "react",
+    "webpack",
+    "es6"
+  ],
+  "author": "shelly",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dengshasha/react-webpack/issues"
+  },
+  "homepage": "https://github.com/dengshasha/react-webpack#readme",
+  "dependencies": {
+    "react": "^15.6.1",
+    "react-dom": "^15.6.1",
+    "webpack": "^3.5.5"
+  }
+}
