@@ -4,7 +4,7 @@
   "description": "react study(1) config environment",
   "main": "app.js",
   "scripts": {
-    "test": "npm start"
+    "start": "webpack-dev-server --progress --colors --hot --inline --content-base build"
   },
   "repository": {
     "type": "git",
@@ -22,8 +22,23 @@
   },
   "homepage": "https://github.com/dengshasha/react-webpack#readme",
   "dependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.1",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-react": "^6.24.1",
+    "css-loader": "^0.28.5",
+    "eslint": "^4.4.1",
+    "eslint-loader": "^1.9.0",
+    "eslint-plugin-react": "^7.2.1",
+    "extract-text-webpack-plugin": "^3.0.0",
+    "html-webpack-plugin": "^2.30.1",
+    "less": "^2.7.2",
+    "less-loader": "^4.0.5",
     "react": "^15.6.1",
     "react-dom": "^15.6.1",
-    "webpack": "^3.5.5"
+    "style-loader": "^0.18.2"
+  },
+  "devDependencies": {
   }
 }
