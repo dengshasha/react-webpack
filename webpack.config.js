@@ -15,6 +15,12 @@ module.exports = {
     devtool: 'source-map', //打包时同时创建一个新的sourcemap文件，浏览器调试需要定位文件就是依赖于sourcemap
     module: {
         loaders: [
+             {
+                enforce: 'pre',
+                test: /\.js$/,
+                loader: 'eslint-loader',
+                exclude: path.resolve(__dirname, 'node_module')
+            },
             {
                 test: /\.js$/,
                 loader:'babel-loader',

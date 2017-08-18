@@ -275,8 +275,134 @@ plugins: [
 运行一下，打开调试器：看到html文件里面已经引入了打包文件，表示我们的配置成功了。
 ![2017-06-09_134635.jpg](http://upload-images.jianshu.io/upload_images/5807862-d8af1ba15972b4a0.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
-------------------------        2017.8.18更      -----------------------------  
-我把有关eslint的配置去掉了，然后在另一篇文章详细总结了eslint的配置。  
-----------------------------------     END       ------------------------------
+--------------------------      2017.8.18更     -------------------------------
+### 配置ESLint
+ESLint是用于校验代码规范的。先全局安装ESLint:`npm install eslint -g `
+而要校验React项目代码，还需要安装一个eslint-plugin-react插件，  
+安装：`npm install eslint eslint-plugin-react --save` 
+webpack打包的时候执行eslint检查还需要`eslint-loader`  
+安装: `npm install eslint-loader --save`   
+配置信息在这里查看：[eslint-loader](https://github.com/MoOx/eslint-loader)  
+webpack.config.js:
+```
+loaders: [
+             {
+                test: /\.js$/,
+                loader: ['react-hot-loader', 'babel-loader'],
+                exclude: path.resolve(__dirname, 'node_module')
+            },
+            {
+                enforce: 'pre',
+                test: /\.js$/,
+                loader: 'eslint-loader',
+                exclude: path.resolve(__dirname, 'node_module')
+            },
+        ],
+```
+接下来需要配置eslint规则。  
+这里我采用命令行来初始化`.eslintrc`文件：`eslint --init`
+关于如何配置你的ESLint文件，这里有三个选项：
+![2017-06-13_102258.jpg](http://upload-images.jianshu.io/upload_images/5807862-ab76e490d4e3c166.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+1. 根据你喜欢的方式来制定规则，你需要回答一些问题。
+2. 使用当下流行的代码规则。
+3. 根据你的js文件生成一些规则。
+
+第三种就不需再说了，eslint会去审查你项目中js的代码格式生成相应的规则。先看第三种。键盘上下键选择，回车键确定：
+![image.png](http://upload-images.jianshu.io/upload_images/5807862-78c7681c8b418d3e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+可以看到有三种流行的代码风格，据说目前最常用的是Airbnb，选择这个回车，接着回答问题：是否使用React，希望生成的eslint文件格式是什么，我选择的是javascript，Airbnb需要安装一些插件，耐心等待就好。  
+可以看到，在我们项目的根目录下已经生成好了`.eslintrc.js`文件，该文件中只有一句代码：
+```
+module.exports = {
+    "extends": "airbnb"
+};
+```
+![image.png](http://upload-images.jianshu.io/upload_images/5807862-2f734f06c6b047a1.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+至于该插件有哪些规则，大家可以自行查阅，反正我用这个插件就是一片红，代码规则太严厉。所以我放弃了。  
+现在选择第一种方式，自定义代码规则，根据自己的使用情况选择。    
+![2017-06-13_102509.jpg](http://upload-images.jianshu.io/upload_images/5807862-0fb61880c1b33003.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)  
+现在给我生成的.eslintrc.js文件是这样的：
+```
+module.exports = {
+    "env": {
+        "browser": true,
+        "es6": true,
+        "node": true
+    },
+    "extends": "eslint:recommended",
+    "parserOptions": {
+        "ecmaFeatures": {
+            "experimentalObjectRestSpread": true,
+            "jsx": true
+        },
+        "sourceType": "module"
+    },
+    "plugins": [
+        "react"
+    ],
+    "rules": {
+        "indent": [
+            "error",
+            "tab"
+        ],
+        "linebreak-style": [
+            "error",
+            "windows"
+        ],
+        "quotes": [
+            "error",
+            "single"
+        ],
+        "semi": [
+            "error",
+            "never"
+        ]
+    }
+};
+```
+我在选择的时候选择了要支持ES6，JSX语法，可以看到在配置文件中已经有了配置信息：` "es6": true`,` "jsx": true`等等。
+现在来运行一下`npm start`  
+给我报了一堆错：  
+![2017-06-13_144448.jpg](http://upload-images.jianshu.io/upload_images/5807862-acd1ccee2eeab27e.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+最后三个错误是因为我设置的缩进和我代码的缩进不一致，我用的编辑器是Sublime Text3，我发现这里检查到的错误是我使用了空格缩进而不是tab缩进，所以我需要修改Sublime的配置，打开Preferences--> Settings会出现两个文件，我们修改Preferences.sublime-settings--User：
+```
+{
+    "tab_size": 4,
+    "translate_tabs_to_spaces": false
+}
+```
+修改了以后之前写的代码格式不会改变，这个规则只会在之后生效，所以还需要针对项目中的每个文件（记住要选中代码）选择菜单栏 View--> Indentation --> Convert Indentation to tabs。
+或者可以直接改变.eslintrc.js文件：
+```
+"rules": {
+        "indent": [
+            "error",
+            4
+        ],
+}
+//使用空格缩进，我习惯四格
+```
+semi的错误我查了一下，[semi](http://eslint.cn/docs/rules/semi),两个参数`never`和`always`,`never`是句末始终没有分号，`always`与它相反，我设置的是`never`，文档里的说法是"never" 禁止在语句末尾使用分号 (除了消除以 [、(、/、+ 或 - 开始的语句的歧义)，所以我删除了代码中的分号。
+```
+"semi": [
+            "error",
+            "never"
+        ],
+```
+` 'React' is defined but never used`这个错误的解决方式： 
+.eslintrc.js:
+```
+ "rules": {
+        //...
+        "react/jsx-uses-react": 1,
+    }
+```
+剩下的两个错误` 'styles' is defined but never used`和` 'App' is defined but never used`解决办法：
+
+```
+ "rules": {
+        "no-unused-vars": 1,
+    }
+```
+重新编译一下，这两个会报警告，没关系，终于编译过了一次了。
 ### 总结
-我的项目还没有开始，暂时就配置了这些东西，后面如果我用到了新的好用的插件，会回来继续更新的.  
+我的项目还没有开始，暂时就配置了这些东西，后面如果我用到了新的好用的插件，会回来继续更新的.
