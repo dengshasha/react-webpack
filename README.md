@@ -1,10 +1,5 @@
 # react-webpack
 搭建react+webpack+es6环境
-### 运行项目
-`npm install`  
-`npm start`
-### 查看项目
-`http://localhost:8080/`
 
 ### 配置过程
 我一直想试着动手开发一个react项目，但是总有一种万事开头难的感觉，配置webpack真是很头大，没办法，必须要先把环境整好才能安心开发啊。  

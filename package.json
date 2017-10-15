@@ -4,7 +4,7 @@
   "description": "react study(1) config environment",
   "main": "app.js",
   "scripts": {
-    "start": "webpack-dev-server --progress --colors --hot --inline --content-base build"
+    "start": "webpack-dev-server --progress --colors --inline --content-base build"
   },
   "repository": {
     "type": "git",
@@ -44,6 +44,9 @@
     "eslint-config-airbnb": "^15.1.0",
     "eslint-plugin-import": "^2.7.0",
     "eslint-plugin-jsx-a11y": "^5.1.1",
-    "eslint-plugin-react": "^7.2.1"
+    "eslint-plugin-react": "^7.2.1",
+    "extract-text-webpack-plugin": "^3.0.1",
+    "webpack": "^3.7.1",
+    "webpack-dev-server": "^2.9.1"
   }
 }
