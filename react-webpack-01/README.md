@@ -8,7 +8,8 @@
 新建一个项目，使用`npm init`初始化生成一个package.json文件。可以全部回车，后面反正是可以修改的。
 
 安装webpack: `npm install webpack --save-dev`
-全局安装： `npm install webpack -g`(全局安装以后才可以直接在命令行使用webpack)
+
+全局安装： ```npm install webpack -g```(全局安装以后才可以直接在命令行使用webpack)
 
 一个最简单的webpack.config.js文件可以只有entry(入口文件)和output(打包输出路径)
 新建`webpack.config.js`
@@ -30,8 +31,10 @@ function hello() {
 }
 ```
 好了这就够了，我们已经可以运行这个项目了，打开命令窗口试一下：`webpack`
+
 编译成功了，项目根目录下已经生成好build/bundle.js文件了，bundle.js文件前面的几十行代码其实就是webpack对怎么加载文件，怎么处理文件依赖做的一个声明。
 我们可以将启动wepback的命令写到package.json中并添加一些有用的参数：
+
 `package.json`
 ```
 "scripts": {
@@ -43,7 +46,7 @@ function hello() {
 ### 添加模板文件index.html
 配置react项目最重要的两个文件是入口文件（这里是src/index.js）和html模板文件(这里是public/index.html)，入口文件是整个项目开始运行的地方，模板文件是构建DOM树的地方，相信有一部分小伙伴在网上看到的教程是直接在打包路径build里面建一个index.html，然后手动或者使用`html-webpack-plugin`将打包后的js引入，这样存在一个问题是build本身是打包路径，而这个路径的所有文件都不应该是我们手动去添加的，甚至包括这个文件夹也不是我们事先建好的。所以最好是按照`create-react-app`的方式，将这类不需要被webpack编译的文件放到public路径下。
 
-`public/index.html`
+```public/index.html```
 ```
 <!DOCTYPE html>
 <html lang="en">
@@ -57,6 +60,7 @@ function hello() {
 </html>
 ```
 现在要让webpack知道这就是我们的html入口文件，并且我们不需要手动引入打包后的js文件，需要安装`html-webpack-plugin`:
+
 `npm install html-webpack-plugin --save-dev`
 
 `webpack.config.js`
@@ -79,9 +83,11 @@ module.exports = {
 webpack-dev-server主要是启动了一个类似于node.js的express 服务器，并且可以实现监听文件变化自动打包编译，虽然使用webpack的 --hot参数也可以做到，但当项目变大了，打包进程就变得非常慢，而webpack-dev-server是直接将打包文件放到内存中的，大大加速了打包进程。
 
 全局安装：`npm install webpack-dev-server --g` (全局安装以后才可以直接在命令行使用webpack-dev-server)
+
 本地安装：`npm install webpack-dev-server --save-dev`
 
 一个简单的启动`webpack-dev-server`的命令：`webpack-dev-server --content-base build/` 
+
 ` --content-base`是指定保存打包文件的路径，它和webpack.config.js的`output.path`设置路径最好保持一致，不过这个参数设置不是必需的，因为devServer是将打包文件放到内存中的，你在你的项目中是看不到这个文件的。
 `webpack-dev-server`会默认启动8080端口，此时打开[localhost:8080](localhost:8080)就能看到项目启动起来了。不过此时`webpack-dev-server`可还没开始发挥它的作用，它还不能实现自动刷新。
 
@@ -139,6 +145,7 @@ entry: [
 `config.entry.unshift("webpack-dev-server/client?http://localhost:8080/");`
 
 **还懵逼吗？那我再多说两句**
+
 以上这些乱七八糟的配置估计把你都看晕了吧，我再梳理一下有关inline模式的东西，HTML方式最简单，在`index.html`页面里添加一个<script>标签就行了，如果不想用Node.js配置，直接用`webpack-dev-server`，那么配置参数可以写在`webpack.config.js`的`devServer`里面，或者直接写在命令行里面，具体写法参考[https://webpack.js.org/configuration/dev-server/](https://webpack.js.org/configuration/dev-server/)，它会注明哪些参数是只能用于CLI（命令行）的。此时启动项目：
 ```
 "scripts": {
@@ -181,6 +188,10 @@ output: {
         hot: true,  
     },
 ```
+以上是官网的配置，但是当你启动项目的时候却发现报错了：
+![image.png](http://upload-images.jianshu.io/upload_images/5807862-c38978aa4e9c323b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+那么你需要添加`new webpack.HotModuleReplacementPlugin(),`到plugins里面，不要问我为啥刚刚不说，因为官网自己说的它会自动帮我们添加这个plugin的，谁知道它只是说说而已呢（微笑脸）。
+
 采用Node模式分三步走：
 - webpack的entry添加：`webpack/hot/dev-server`
 - webpack的plugins添加`new webpack.HotModuleReplacementPlugin()`
@@ -190,6 +201,7 @@ output: {
 ```
 config.entry.unshift("webpack-dev-server/client?http://localhost:8080/", 'webpack/hot/dev-server');
 let server = new WebpackDevServer(compiler, {
+    contentBase: config.output.path,  
     publicPath: config.output.publicPath,
     hot: true
     ...
@@ -210,9 +222,6 @@ plugins: [
 [HMR] Waiting for update signal from WDS...
 [WDS] Hot Module Replacement enabled.
 ```
-如果非常不幸，当你用`wepback-dev-server`启动却看到了报错：
-![image.png](http://upload-images.jianshu.io/upload_images/5807862-c38978aa4e9c323b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
-添加`new webpack.HotModuleReplacementPlugin(),`到plugins里面，不要问我为啥刚刚不说，因为官网自己说的它会自动帮我们添加这个plugin的，谁知道它只是说说而已呢，微笑脸。
 
 最后根据[Hot Module Replacement](https://webpack.js.org/guides/hot-module-replacement/)的指示再添加一个`NamedModulesPlugin `，它的作用大概是更容易分析依赖：
 ```
