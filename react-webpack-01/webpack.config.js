@@ -15,14 +15,11 @@ module.exports = {
 		filename: 'bundle.js', //打包文件名
 		publicPath: publicPath,
 	},
-	devtool: 'inline-source-map',
 	devServer: {
 		publicPath: publicPath,
 		contentBase: path.resolve(__dirname, buildPath),
-		compress: true,
 		inline: true,
 		hot: true,	
-		hotOnly: true
 	},
 	module: {
 		loaders: [
