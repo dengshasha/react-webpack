@@ -1,98 +1,28 @@
 ### 前言
-搭一个脚手架真不是一件容易的事，之前为了学习webpack是怎么配置的选择自己搭建开发环境，折腾了好几天总算对入口文件、打包输出、JSX, es6编译成es5、css加载、压缩代码等这些基础的东西有了一个大体的了解。后来有一次组内分享技术，我作死的选择了webpack，为了看起来高大上又去折腾它的按需加载、怎样处理第三方插件、拆分CSS文件、利用Happypack实现多进程打包等等。彻底把自己搞晕了。再后来接手了一个紧急的项目，实在来不及去折腾webpack了，就选择使用react官方推荐的脚手架[create-react-app](https://github.com/facebookincubator/create-react-app)，这个脚手架确实搭的非常完善，几乎不需要我们修改配置，我也研究了一下它的配置，准备从零开始搭建一个react+webpack的开发环境，配置从简单到复杂，希望可以给对webpack一窍不通的小伙伴一点指引。
+webpack-dev-server配置热更新看起来很简单，但是实际上是有很多坑的，目前为止我没有搜到一篇深入讲解这个的，如果你觉得它很简单，那么或许等你看完这篇文章你会有不一样的看法。
+由于HMR非常强大，本来这篇文章我是准备总结`webpack-dev-server`的，最后基本只总结了它的两个参数：`inline`和`hot`，其它的配置我会另外再写一篇文章讲解。
+### 模块热替换(Hot Module Replacement)
+HMR是webpack最令人兴奋的特性之一，当你对代码进行修改并保存后，webpack 将对代码重新打包，并将新的模块发送到浏览器端，浏览器通过新的模块替换老的模块，这样在不刷新浏览器的前提下就能够对应用进行更新。HMR是一个非常值得去深入研究的东西，它绝不是目前我们看到的大多数技术文章说的配置一个`hot`参数这么简单，有兴趣的小伙伴可以去看看它的实现原理，目前为止我也只看过一点点。
 
-由于内容较多，我将有关webpack配置分为了几节，这篇是第一节，主要总结webpack-dev-server实现热更新的坑，目前为止我没有搜到一篇深入讲解这个的，如果你觉得它很简单，那么或许等你看完这篇文章你会有不一样的看法。
-
-另外，这篇文章也是我搭建webpack环境的第一篇，所以一开始插入了一些简单的配置内容，只想看`webpack-dev-server`有关的内容可以直接跳到后面。
-### 初始化
-新建一个项目，使用`npm init`初始化生成一个package.json文件。可以全部回车，后面反正是可以修改的。
-
-安装webpack: `npm install webpack --save-dev`
-
-全局安装： ```npm install webpack -g```(全局安装以后才可以直接在命令行使用webpack)
-
-一个最简单的webpack.config.js文件可以只有entry(入口文件)和output(打包输出路径)
-新建`webpack.config.js`
-```
-const path = require('path');
-
-module.exports = {
-    entry: './src/index.js', //相对路径
-    output: {
-        path: path.resolve(__dirname, 'build'), //打包文件的输出路径
-        filename: 'bundle.js' //打包文件名
-    }
-}
-```
-新建入口文件 `src/index.js`
-```
-function hello() {
-    console.log('hello world');
-}
-```
-好了这就够了，我们已经可以运行这个项目了，打开命令窗口试一下：`webpack`
-
-编译成功了，项目根目录下已经生成好build/bundle.js文件了，bundle.js文件前面的几十行代码其实就是webpack对怎么加载文件，怎么处理文件依赖做的一个声明。
-我们可以将启动wepback的命令写到package.json中并添加一些有用的参数：
-
-`package.json`
-```
-"scripts": {
-    "start": "webpack --progress --watch --hot"
-  },
-```
-`progress`是显示打包进程，`watch`是监听文件变化，`hot`是启动热加载，更多命令行参数详见：[webpack cli](https://webpack.js.org/api/cli/)
-以后只需要执行`npm start`就可以了。
-### 添加模板文件index.html
-配置react项目最重要的两个文件是入口文件（这里是src/index.js）和html模板文件(这里是public/index.html)，入口文件是整个项目开始运行的地方，模板文件是构建DOM树的地方，相信有一部分小伙伴在网上看到的教程是直接在打包路径build里面建一个index.html，然后手动或者使用`html-webpack-plugin`将打包后的js引入，这样存在一个问题是build本身是打包路径，而这个路径的所有文件都不应该是我们手动去添加的，甚至包括这个文件夹也不是我们事先建好的。所以最好是按照`create-react-app`的方式，将这类不需要被webpack编译的文件放到public路径下。
-
-```public/index.html```
-```
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>My App</title>
-</head>
-<body>
-    <div id="root"></div>
-</body>
-</html>
-```
-现在要让webpack知道这就是我们的html入口文件，并且我们不需要手动引入打包后的js文件，需要安装`html-webpack-plugin`:
-
-`npm install html-webpack-plugin --save-dev`
-
-`webpack.config.js`
-```
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-module.exports = {
-    plugins: [
-        new HtmlWebpackPlugin({
-            template: './public/index.html', //指定模板路径
-        })
-    ]
-}
-```
-重新运行一下：`npm start`
-现在可以看到build路径下已经生成好了一个index.html文件，并且这个文件已经引入了bundle.js文件了。
-
-### 使用webpack-dev-server
-我当时配这个东西弄了好久，觉得它实在太复杂了，主要是在网上搜的文章太误导人了，把源文档翻译直接翻译过来，还翻译错了。最近有时间了正好再研究研究，发现通彻了很多，希望我能把这个东西讲的稍微清楚一点，让大家对它有一个简单的认识，至少看完以后知道配置一个最基础的`webpack-dev-server`是怎样的。好了，我们开始吧。
-
-webpack-dev-server主要是启动了一个类似于node.js的express 服务器，并且可以实现监听文件变化自动打包编译，虽然使用webpack的 --hot参数也可以做到，但当项目变大了，打包进程就变得非常慢，而webpack-dev-server是直接将打包文件放到内存中的，大大加速了打包进程。
-
+其实实现HMR的插件有很多，`webpack-dev-server`只是其中的一个，当然也是优秀的一个，它能很好的与webpack配合。另外，`webpack-dev-server`只是用于开发环境的。
+### webpack-dev-server实现自动刷新
 全局安装：`npm install webpack-dev-server --g` (全局安装以后才可以直接在命令行使用webpack-dev-server)
 
 本地安装：`npm install webpack-dev-server --save-dev`
+在webpack的配置文件里添加`webpack-dev-server`的配置：
+```
+module.exports = {
+    devServer: {
+        contentBase: path.resolve(__dirname, 'build'),
+    },
+}
+```
+`webpack-dev-server`为了加快打包进程是将打包后的文件放到内存中的，所以我们在项目中是看不到它打包以后生成的文件／文件夹的，但是，这不代表我们就不用配置路径了，配置过`webpack.config.js`的小伙伴都知道`output.path`这个参数是配置打包文件的保存路径的，`contentBase`就和`output.path`是一样的作用，如果不配置这个参数就会打包到项目的根路径下。有关这几个配置路径的参数我会再写一篇文章总结，这里就不展开了。
+当然你也可以选择在命令行中启动的时候加这个参数：
 
-一个简单的启动`webpack-dev-server`的命令：`webpack-dev-server --content-base build/` 
+`webpack-dev-server --content-base build/`
 
-` --content-base`是指定保存打包文件的路径，它和webpack.config.js的`output.path`设置路径最好保持一致，不过这个参数设置不是必需的，因为devServer是将打包文件放到内存中的，你在你的项目中是看不到这个文件的。
-`webpack-dev-server`会默认启动8080端口，此时打开[localhost:8080](localhost:8080)就能看到项目启动起来了。不过此时`webpack-dev-server`可还没开始发挥它的作用，它还不能实现自动刷新。
-
-### webpack-dev-server实现自动刷新
-`webpack-dev-server`支持两种自动刷新方式，这两种方式都支持热更新。
+`webpack-dev-server`支持两种自动刷新方式：
 > 1.  Iframe mode 
 > 2.  Inline mode
 
@@ -183,19 +113,25 @@ output: {
     devServer: {
         publicPath: publicPath,
         contentBase: path.resolve(__dirname, buildPath),
-        compress: true,
         inline: true,
         hot: true,  
     },
 ```
-以上是官网的配置，但是当你启动项目的时候却发现报错了：
+这里有一个坑，官网说这样配置以后它会自动添加`HotModuleReplacementPlugin`插件到配置文件里，但是我却发现报错了：
 ![image.png](http://upload-images.jianshu.io/upload_images/5807862-c38978aa4e9c323b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
-那么你需要添加`new webpack.HotModuleReplacementPlugin(),`到plugins里面，不要问我为啥刚刚不说，因为官网自己说的它会自动帮我们添加这个plugin的，谁知道它只是说说而已呢（微笑脸）。
+一开始我是手动在plugins里面添加`new webpack.HotModuleReplacementPlugin()`，（配置与使用Node方式一样），这样就可以正常启动起来了，后来我无意间看到了一篇博客，说的是除了在devServer里面写，还要在启动参数里面加`--hot`
+```
+    "start": "webpack-dev-server --hot --open"
+```
+这样webpack才能帮我们把`HotModuleReplacementPlugin`自动添加进来而不用我们再手动添加，`--open`也是一个比较好用的参数，可以帮我们自动打开浏览器窗口，这个参数如果写在devServer也是没用的。
+我以前一直以为写在命令行里面和写在devServer是没差的，现在看来是我太年轻了啊Q。
 
 采用Node模式分三步走：
 - webpack的entry添加：`webpack/hot/dev-server`
 - webpack的plugins添加`new webpack.HotModuleReplacementPlugin()`
 - webpack-dev-server添加`hot: true`
+
+这里我再说明一下，采用Node方式做不到自动将`webpack/hot/dev-server`添加到entry里面，这和前面的自动刷新是一样的。然后！！使用Node方式启动也不能在命令行里面添加启动参数了，所以我们需要手动添加`HotModuleReplacementPlugin`，还有,`--open`自然也没法用了，这时候要自动打开浏览器估计会麻烦一点，有兴趣的小伙伴可以去研究一下`create-react-app`是怎么配置这个的。
 
 `server.js`
 ```
@@ -244,7 +180,7 @@ plugins: [
 注意看当我代码修改的时候，页面并没有刷新，并且左边日志能看到HMR开始工作打印的日志。
 而出现这两种情况的原因是：前一个是修改的js，后一个是修改的css。
 
-来自于devServer官方的解释是（找了半天也没找到）借助于`style-loader`CSS很容易实现HMR(到这里我还没有配置加载CSS的loader)，而对于js，devServer会尝试做HMR，如果不行就触发整个页面刷新。你问我什么时候js更改才会只触发HMR，那你可以试着再加一个参数`hotOnly: true`试一试，这时候相当于禁用了自动刷新功能，然而devServer会告诉你这个文件不能被热更新哦。
+来自于devServer官方的解释是（找了半天也没找到）借助于`style-loader`CSS很容易实现HMR，而对于js，devServer会尝试做HMR，如果不行就触发整个页面刷新。你问我什么时候js更改才会只触发HMR，那你可以试着再加一个参数`hotOnly: true`试一试，这时候相当于禁用了自动刷新功能，然而devServer会告诉你这个文件不能被热更新哦。
 ![image.png](http://upload-images.jianshu.io/upload_images/5807862-442fd5ff8282c142.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
 如果你觉得可以接受每次修改js都重刷页面，那么到这里就可以了。如果你还想继续追究下去，那么继续吧。
@@ -367,4 +303,3 @@ ReactDom.render(
 ![react热更新1.gif](http://upload-images.jianshu.io/upload_images/5807862-5ec0faf40df557f0.gif?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 ### 小结
 这篇文章花了我一周多的时间，最后总算弄清楚了热更新到底是怎么回事，百度一搜全都是你只要配置一个`hot: true`就好啦，然后都没弄明白这到底是热更新还是自动刷新，可供参考的文档只有官网，官网又讲的太简单，所以折腾了特别久。看不懂的小伙伴可以给我留言，或者我哪里讲的不对的都可以提出来。
-本来准备一篇文章搞定devServer的配置，由于这部分内容太多所以分成两篇了，接下来我会继续优化devServer的配置，包括使用Node.js配置的方法。

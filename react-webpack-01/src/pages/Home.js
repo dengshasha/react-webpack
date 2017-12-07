@@ -32,11 +32,10 @@ export default class Home extends Component {
 	render() {
 		return(
 			<div className="container">
-				<h1>{this.state.count}</h1>
+				<h1>count的值：{this.state.count}</h1>
 				<button onClick={() => this.add()}>count+1</button>
 
 				<button onClick={() => this.sub()}>count-1</button>
-				<h1>Hello, react-hot-loader!</h1>
 			</div>	
 		) 
 	}
