@@ -3,6 +3,13 @@
 
 ### 运行并启动项目
 
-`npm install`
+克隆项目到本地以后，选择要运行的例子进入到该项目路径下
 
-`npm start`
+安装：`npm install`
+
+运行：`npm start`
+
+###webpack-dev-server热更新
+- 非Node方式：[react-webpack-01](https://github.com/dengshasha/react-webpack/tree/master/react-webpack-01)
+
+- Node方式：[react-webpack-02](https://github.com/dengshasha/react-webpack/tree/master/react-webpack-02)
