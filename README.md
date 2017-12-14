@@ -9,7 +9,10 @@
 
 运行：`npm start`
 
-###webpack-dev-server热更新
+### webpack-dev-server热更新
 - 非Node方式：[react-webpack-01](https://github.com/dengshasha/react-webpack/tree/master/react-webpack-01)
 
 - Node方式：[react-webpack-02](https://github.com/dengshasha/react-webpack/tree/master/react-webpack-02)
+
+### 一个最简单的webpack配置
+[react-webpack-03](https://github.com/dengshasha/react-webpack/tree/master/react-webpack-03)
