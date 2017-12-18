@@ -1,11 +1,11 @@
-import React, { Component } from 'react';
-import '../css/home.less';
-import logo from '../images/react.png';
+import React, { Component } from 'react'
+import '../css/home.less'
+import logo from '../images/react.png'
 
 
-export default class Home extends Component {
+class Home extends Component {
 	constructor(props) {
-		super(props);
+		super(props)
 		this.state = {
 			count: 0
 		}
@@ -31,6 +31,7 @@ export default class Home extends Component {
 		})
 	}
 
+
 	render() {
 		return(
 			<div className="container">
@@ -48,3 +49,5 @@ export default class Home extends Component {
 		) 
 	}
 }
+
+export default Home 
