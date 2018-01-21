@@ -1,11 +1,14 @@
 import React, { Component } from 'react'
+import {
+	NavLink,
+	Route,
+} from 'react-router-dom'
 
 import '../css/user.css'
 
 
 
-class Login extends Component {
-
+class JoinUs extends Component {
 	render() {
 		return(
 			<div className="user">
@@ -17,4 +20,4 @@ class Login extends Component {
 
 
 
-export default Login 
+export default JoinUs 

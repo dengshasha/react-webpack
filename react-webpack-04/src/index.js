@@ -4,28 +4,62 @@ import ReactDom from 'react-dom'
 import {
 	BrowserRouter as Router,
 	Route,
-	Switch
+	Switch,
+	Redirect
 } from 'react-router-dom'
 
-import Home from './pages/Home'
-import User from './pages/User'
-import Login from './pages/Login'
-import Header from './components/Header'
-// import createBrowserHistory from 'history/createBrowserHistory';
+import loaderHome from 'bundle-loader?lazy&name=home!./pages/Home'
+import loaderNews from 'bundle-loader?lazy&name=news!./pages/News'
+import loaderCourse from 'bundle-loader?lazy&name=course!./pages/Course'
+import loaderJoinUs from 'bundle-loader?lazy&name=joinUs!./pages/JoinUs'
+import loaderLogin from 'bundle-loader?lazy&name=joinUs!./pages/Login'
+import Bundle from './components/Bundle'
 
-// const history = createBrowserHistory();
+
+const Home = (props) => (
+  <Bundle load={loaderHome}>
+    {(Home) => <Home {...props}/>}
+  </Bundle>
+)
+
+
+const News = (props) => (
+  <Bundle load={loaderNews}>
+    {(News) => <News {...props}/>}
+  </Bundle>
+)
+
+const Course = (props) => (
+  <Bundle load={loaderCourse}>
+    {(Course) => <Course {...props}/>}
+  </Bundle>
+)
+
+const JoinUs = (props) => (
+  <Bundle load={loaderJoinUs}>
+    {(JoinUs) => <JoinUs {...props}/>}
+  </Bundle>
+)
+
+const Login = (props) => (
+  <Bundle load={loaderLogin}>
+    {(Login) => <Login {...props}/>}
+  </Bundle>
+)
+
 
 const App = () => (
 	<Router>
-		<div>
-			<Header />
-			<Switch>
-				<Route exact path="/" component={Home}/>
-				<Route strict path="/login" component={Login} />
-				<Route path="/user" component={User}/>
-				<Route path="/:name" render={() => <h2>你能看到我吗？</h2>}/>
-			</Switch>
-		</div>
+		<Switch>
+		
+			<Route exact path="/" component={Home}/>
+			<Route path="/login" component={Login}/>
+			<Route path="/news" component={News}/>
+			<Route path="/course" component={Course}/>
+			<Route path="/joinUs" component={JoinUs}/>
+			<Route path="/error" render={(props) => <div><h1>404 Not Found!</h1></div>}/>
+			<Route path="*" render={(props) => <Redirect to='/error'/>}/>
+		</Switch>
 	</Router>
 )
 
@@ -37,6 +71,7 @@ if (module.hot) {
 		)
 	})
 }
+
 
 
 ReactDom.render(

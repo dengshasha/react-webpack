@@ -12,19 +12,17 @@ class Header extends Component {
 			<header>
 				<nav>
 					<ul>
-						<li><NavLink exact to="/">Home</NavLink></li>
-						<li><NavLink 
-							to={{
-								pathname: "/user",
-								state: {isLogin: true}
-							}}>
-							User</NavLink></li>
-						<li><NavLink to="/login">Login</NavLink></li>
+						<li><NavLink exact to="/">首页</NavLink></li>
+						<li><NavLink to="/news">新闻</NavLink></li>
+						<li><NavLink to='/course'>课程</NavLink></li>
+						<li><NavLink to="/joinUs">加入我们</NavLink></li>
 					</ul>
 				</nav>
 			</header>
 		)
 	}
 }
+
+
 
 export default Header
