@@ -49,7 +49,7 @@ ReactDom.render(
 )
 ```
 
-一个简单的路由，我们可以将<NavLink>和<Route>都写在`index.js`里面，但这会让每一个页面都渲染出导航栏。
+一个简单的路由，我们可以将`<NavLink>`和`<Route>`都写在`index.js`里面，但这会让每一个页面都渲染出导航栏。
 ### 抽离导航的路由
 假如现在新增了登录页，要求登录页没有导航栏，其它页面有导航栏。
 `index.js`
@@ -96,7 +96,7 @@ class Header extends Component {
     }
 }
 ```
-每个页面根据需要选择是否引入<Header>组件
+每个页面根据需要选择是否引入`<Header>`组件
 ### 添加404页面
 利用`<Switch>`组件的特性，当前面所有的路由都匹配不上时，会匹配最后一个`path="*"`的路由，该路由再重定向到404页面。
 `index.js`
@@ -206,13 +206,13 @@ class News extends Component {
 
 export default News 
 ```
-> <NavLink>传递的参数是通过location对象获取的。
+> `<NavLink>`传递的参数是通过location对象获取的。
 
 ![嵌套路由演示.gif](http://upload-images.jianshu.io/upload_images/5807862-7f74da232116ad33.gif?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 ### 优化嵌套路由
 前面两种嵌套路由，子路由都渲染出了父组件，如果不想渲染出父组件，有两种方法。
 
-**方法一：将配置子路由的<Route>写在index.js里面**
+**方法一：将配置子路由的`<Route>`写在index.js里面**
 `index.js`
 ```
 <Route exact path="/news" component={News}/>
