@@ -23,16 +23,16 @@ module.exports = {
 	},
 	module: {
 		loaders: [
-			// {
-			// 	test: /\.bundle\.js$/,
-			// 	use: {
-			// 		loader: 'bundle-loader',
-			// 		options: {
-			// 		  	lazy: true,
-			// 		  	name: '[name]'
-			// 		}
-			// 	}
-			// },
+			{
+				test: /\.bundle\.js$/,
+				use: {
+					loader: 'bundle-loader',
+					options: {
+					  	lazy: true,
+					  	name: '[name]'
+					}
+				}
+			},
 			{
 				test: /\.js$/,
 				loader: 'babel-loader',
